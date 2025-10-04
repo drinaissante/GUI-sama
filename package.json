@@ -1,0 +1,23 @@
+{
+  "name": "css-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.22.1",
+    "dotenv": "^17.0.0",
+    "firebase-admin": "^13.5.0",
+    "undici": "^7.11.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "eslint": "^9.30.0"
+  }
+}
