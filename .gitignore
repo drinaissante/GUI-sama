@@ -2,4 +2,4 @@ node_modules
 .env
 eslint.config.js
 *.rar
-data/commissions.json
+data/users.json
