@@ -1,6 +1,4 @@
 import { Events } from "discord.js";
-import { sendReplyEmbed } from "../embeds/other_embeds.js";
-import { findCommissionByThreadId } from "../data/jsonHelper.js";
 
 export const name = Events.MessageCreate;
 
@@ -12,27 +10,23 @@ export async function execute(message) {
   // check if thread
   if (message.channel.isThread()) {
     // check if a commission thread
-    if (message.channel.name.includes("Commission")) {
-      const commission_channel = findCommissionByThreadId(message.channel.id);
-
-      if (!commission_channel) {
-        console.log(
-          "Could not find the commission channel for '%d'",
-          message.channel.id
-        );
-
-        message.channel.send(
-          "Could not find the commission channel for this thread. Please contact the developer."
-        );
-        return;
-      }
-
-      await message.delete();
-
-      await message.channel.send(
-        sendReplyEmbed(message.author, content, commission_channel)
-      );
-    }
+    // if (message.channel.name.includes("Commission")) {
+    //   const commission_channel = findCommissionByThreadId(message.channel.id);
+    //   if (!commission_channel) {
+    //     console.log(
+    //       "Could not find the commission channel for '%d'",
+    //       message.channel.id
+    //     );
+    //     message.channel.send(
+    //       "Could not find the commission channel for this thread. Please contact the developer."
+    //     );
+    //     return;
+    //   }
+    //   await message.delete();
+    //   await message.channel.send(
+    //     sendReplyEmbed(message.author, content, commission_channel)
+    //   );
+    // }
   }
 
   let prefix = "=";
