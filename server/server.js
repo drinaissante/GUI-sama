@@ -12,6 +12,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://compsciety.vercel.app",
+  "https://drinaissante.github.io",
 ];
 
 app.use(
