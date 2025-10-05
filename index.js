@@ -16,8 +16,6 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
-// TODO - make commissions.json store user who joins (avatar, username)
-
 // initialize database
 import { db_init } from "./loaders/firebase-loader.js";
 db_init();
@@ -49,3 +47,6 @@ process.on("SIGINT", () => {
   saveJSON();
   process.exit();
 });
+
+import initExpress from "./server/server.js";
+initExpress();
