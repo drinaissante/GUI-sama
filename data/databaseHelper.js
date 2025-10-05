@@ -2,7 +2,7 @@ const API_URL = "https://backend-compsciety.vercel.app/api/users";
 
 export async function storeToDatabase(jsonData) {
   try {
-    const res = await fetch("http://localhost:3000/api/users", {
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
