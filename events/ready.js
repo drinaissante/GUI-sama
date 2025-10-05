@@ -19,7 +19,7 @@ export async function execute(client) {
 
     await loadMembers(guild);
 
-    console.log(`\nLoaded roles, members and channels at '${guild.name}'\n`);
+    console.log(`Loaded roles, members and channels at '${guild.name}'\n`);
   });
 
   console.log(`${client.user.tag} has logged in!`);

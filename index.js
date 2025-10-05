@@ -48,5 +48,5 @@ process.on("SIGINT", () => {
   process.exit();
 });
 
-import initExpress from "./server/server.js";
-initExpress();
+// import initExpress from "./server/server.js";
+// initExpress();

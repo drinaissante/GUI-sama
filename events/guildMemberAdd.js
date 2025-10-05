@@ -9,6 +9,12 @@ export async function execute(member) {
 
   await storeUser(
     member.user.username,
+    member.nickname || "-",
+    member.joinedAt
+      ? member.joinedAt.toLocaleDateString("en-US", {
+          dateStyle: "long",
+        })
+      : "-",
     member.user.displayAvatarURL({ dynamic: true }),
     member.user.id
   );

@@ -27,6 +27,12 @@ export async function loadMembers(guild) {
     // convert to an array of simplified user data
     const users = members.map((member) => ({
       username: member.user.username,
+      nickname: member.nickname || "-",
+      joinDate: member.joinedAt
+        ? member.joinedAt.toLocaleDateString("en-US", {
+            dateStyle: "long",
+          })
+        : "-",
       avatarURL: member.user.displayAvatarURL({ dynamic: true }),
       userID: member.user.id,
     }));

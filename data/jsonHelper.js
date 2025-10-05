@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { storeToDatabase } from "./databaseHelper.js";
 
 const __filename = "users.json";
 const __dirname = path.dirname(__filename);
@@ -27,12 +28,20 @@ export function saveJSON() {
   console.log(`Saved ${__filename}`);
 }
 
-export async function storeUser(username, avatarURL, userID) {
+export async function storeUser(
+  username,
+  nickname,
+  joinDate,
+  avatarURL,
+  userID
+) {
   if (!jsonData[username]) {
     jsonData[username] = {};
   }
 
   jsonData[username] = {
+    nickname: nickname,
+    joinDate: joinDate,
     avatarURL: avatarURL,
     userID: userID,
   };
@@ -44,19 +53,40 @@ export async function storeUsers(members, forceResync = false) {
   let updated = false;
 
   for (const member of members) {
-    const { username, avatarURL, userID } = member;
+    const { username, nickname, joinDate, avatarURL, userID } = member;
 
     if (!username || !avatarURL || !userID) continue;
 
     if (!forceResync && jsonData[username]) continue;
 
-    jsonData[username] = { avatarURL, userID };
+    jsonData[username] = { nickname, joinDate, avatarURL, userID };
     updated = true;
   }
 
   if (updated || forceResync) {
     scheduleSave();
+
+    // store to database
+    storeToDatabase(jsonData);
   }
+}
+
+export function getNickName(username) {
+  return jsonData[username].nickname;
+}
+
+export function setNickName(username, nickname) {
+  jsonData[username].nickname = nickname;
+  scheduleSave();
+}
+
+export function getJoinDate(username) {
+  return jsonData[username].joinDate;
+}
+
+export function setJoinDate(username, joinDate) {
+  jsonData[username].nickname = joinDate;
+  scheduleSave();
 }
 
 export function getAvatarURL(username) {
@@ -91,6 +121,26 @@ export function findAvatarURLByUsername(user_name) {
   for (const username in jsonData) {
     if (username === user_name) {
       return jsonData[username].avatarURL;
+    }
+  }
+
+  return undefined;
+}
+
+export function findNickNameByUsername(user_name) {
+  for (const username in jsonData) {
+    if (username === user_name) {
+      return jsonData[username].nickname;
+    }
+  }
+
+  return undefined;
+}
+
+export function findJoinDateByUsername(user_name) {
+  for (const username in jsonData) {
+    if (username === user_name) {
+      return jsonData[username].joinDate;
     }
   }
 
