@@ -46,6 +46,14 @@ export async function storeUser(
     userID: userID,
   };
 
+  storeToDatabase({
+    username: username,
+    nickname: nickname,
+    joinDate: joinDate,
+    avatarURL: avatarURL,
+    userID: userID,
+  });
+
   scheduleSave();
 }
 
