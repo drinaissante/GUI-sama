@@ -126,3 +126,23 @@ export async function getFullName(discord) {
     return null;
   }
 }
+
+// /update <uid> <type:discord> <value>
+export async function set(uid, type, value) {
+  try {
+    await db
+      .collection("users")
+      .doc(uid)
+      .set(
+        {
+          [type]: value,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+    console.log(`User profile '${type}' set update successful`); // send discord
+  } catch (error) {
+    console.error(`Error setting ${type} user profile:`, error);
+  }
+}
