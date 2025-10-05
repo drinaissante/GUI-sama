@@ -1,26 +1,46 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import cors from "cors";
+
 import express from "express";
 import { getData } from "../data/jsonHelper.js";
 
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://compsciety.vercel.app",
+];
 
-const ALLOWED_ORIGIN = "";
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) {
+        console.log("CORS blocked from an unknown origin.");
+
+        return callback(new Error("CORS blocked from unknown origin."));
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`Blocked CORS request from ${origin}`);
+        callback(new Error("CORS blocked"));
+      }
+    },
+    methods: ["GET"],
+    allowedHeaders: ["Content-Type", "x-api-key"],
+  })
+);
+
+const PORT = process.env.PORT;
 
 export default function initExpress() {
   console.log("Initializing API...");
 
   app.use((req, res, next) => {
-    const origin = req.headers.origin;
-
-    if (origin !== ALLOWED_ORIGIN) {
-      return res.status(403).json({ error: "Forbidden." });
-    }
-
     const key = req.headers["x-api-key"];
 
     if (!key || key !== process.env.GUI_KEY) {
@@ -40,8 +60,7 @@ export default function initExpress() {
     const { username } = req.params;
     const { type } = req.query;
 
-    const data = getData();
-    const user = data[username];
+    const user = getData()[username];
 
     console.log(`Fetching ${username}..`);
 
