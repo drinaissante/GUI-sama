@@ -1,3 +1,5 @@
+import { getData, storeUser, storeUsers } from "../data/jsonHelper.js";
+
 // ids for specific channels and categories
 export const ids = {
   guisama: "1423836793475829771",
@@ -15,4 +17,33 @@ export const roles = {};
 
 export function loadRoles(guild) {
   roles.officers = guild.roles.cache.get(ids.officers);
+}
+
+// on bot ready
+export async function loadMembers(guild) {
+  try {
+    const members = await guild.members.fetch();
+
+    // convert to an array of simplified user data
+    const users = members.map((member) => ({
+      username: member.user.username,
+      avatarURL: member.user.displayAvatarURL({ dynamic: true }),
+      userID: member.user.id,
+    }));
+
+    await storeUsers(users);
+
+    const newStoredCount = Object.keys(getData()).length;
+    if (guild.memberCount !== newStoredCount) {
+      console.warn("\nMember updates..");
+
+      await storeUsers(users, true);
+
+      console.log("Resync successful\n");
+    } else {
+      console.log(`\nSuccessfully synced ${newStoredCount} members.\n`);
+    }
+  } catch (error) {
+    console.error("Error loading members:", error);
+  }
 }
