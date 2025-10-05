@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const __filename = "commissions.json";
+const __filename = "users.json";
 const __dirname = path.dirname(__filename);
 const filePath = path.join(__dirname, "data", __filename);
 
-// const commission_channel = ids.commissions_channel;
-
 let jsonData = {};
+
+let saveTimeout = null;
 
 // Load the JSON file
 export function loadJSON() {
@@ -18,114 +18,93 @@ export function loadJSON() {
   jsonData = JSON.parse(data);
 }
 
+export function getData() {
+  return jsonData;
+}
+
 export function saveJSON() {
   fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
   console.log(`Saved ${__filename}`);
 }
 
-export async function storeCommission(
-  channelId,
-  messageId,
-  threadId,
-  budget_,
-  time_frame_,
-  description_,
-  rush_,
-  status_
-) {
-  if (!jsonData[channelId]) {
-    jsonData[channelId] = {};
+export async function storeUser(username, avatarURL, userID) {
+  if (!jsonData[username]) {
+    jsonData[username] = {};
   }
 
-  jsonData[channelId] = {
-    commission_message_id: messageId,
-    thread: threadId,
-    budget: budget_,
-    time_frame: time_frame_,
-    description: description_,
-    rush: rush_,
-    status: status_,
+  jsonData[username] = {
+    avatarURL: avatarURL,
+    userID: userID,
   };
 
   scheduleSave();
 }
 
-export function getStatus(channelId) {
-  return jsonData[channelId].status;
+export async function storeUsers(members, forceResync = false) {
+  let updated = false;
+
+  for (const member of members) {
+    const { username, avatarURL, userID } = member;
+
+    if (!username || !avatarURL || !userID) continue;
+
+    if (!forceResync && jsonData[username]) continue;
+
+    jsonData[username] = { avatarURL, userID };
+    updated = true;
+  }
+
+  if (updated || forceResync) {
+    scheduleSave();
+  }
 }
 
-export function setStatus(channelId, status) {
-  jsonData[channelId].status = status;
+export function getAvatarURL(username) {
+  return jsonData[username].avatarURL;
+}
+
+export function setAvatarURL(username, avatarURL) {
+  jsonData[username].avatarURL = avatarURL;
   scheduleSave();
 }
 
-export function getRush(channelId) {
-  return jsonData[channelId].rush;
+export function getUserID(username) {
+  return jsonData[username].userID;
 }
 
-export function setRush(channelId, rush) {
-  jsonData[channelId].rush = rush;
+export function setUserID(username, userID) {
+  jsonData[username].userID = userID;
   scheduleSave();
 }
 
-export function getCommissions(channelId) {
-  return jsonData[channelId] || {};
-}
-
-export function getThread(channelId) {
-  return jsonData[channelId].thread;
-}
-
-export function getCommissionMessage(channelId) {
-  return jsonData[channelId].commission_message_id;
-}
-
-export function getBudget(channelId) {
-  return jsonData[channelId].budget;
-}
-
-export function setBudget(channelId, budget) {
-  jsonData[channelId].budget = budget;
-  scheduleSave();
-}
-
-export function getTimeFrame(channelId) {
-  return jsonData[channelId].time_frame;
-}
-
-export function getDescription(channelId) {
-  return jsonData[channelId].description;
-}
-
-export function findCommissionByMessage(channelId, messageId) {
-  return (jsonData[channelId] || []).find(
-    (entry) => entry.commission_message === messageId
-  );
-}
-
-export function findCommissionByThreadId(threadId) {
-  for (const channelId in jsonData) {
-    if (jsonData[channelId].thread === threadId) {
-      return channelId;
+export function findUserByUserID(userID) {
+  for (const username in jsonData) {
+    if (jsonData[username].userID === userID) {
+      return username;
     }
   }
 
   return undefined;
 }
 
-export function removeCommission(channelId, messageId) {
-  if (!jsonData[channelId]) return;
+export function findAvatarURLByUsername(user_name) {
+  for (const username in jsonData) {
+    if (username === user_name) {
+      return jsonData[username].avatarURL;
+    }
+  }
 
-  jsonData[channelId] = jsonData[channelId].filter(
-    (entry) => entry.commission_message !== messageId
-  );
+  return undefined;
+}
 
-  if (jsonData[channelId].length === 0) delete jsonData[channelId];
+export async function removeUser(username) {
+  if (!jsonData[username]) return;
+
+  delete jsonData[username];
 
   scheduleSave();
 }
 
-let saveTimeout;
 function scheduleSave(delay = 2000) {
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(saveJSON, delay);
