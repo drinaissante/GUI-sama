@@ -2,6 +2,8 @@ import { Events } from "discord.js";
 
 import { loadJSON } from "../data/jsonHelper.js";
 import { loadChannels, loadRoles, loadMembers } from "../util/botOptions.js";
+import { scheduleReminders } from "../loaders/reminders-loader.js";
+import { loadReminders } from "../data/reminderHelper.js";
 
 export const name = Events.ClientReady;
 export const once = true;
@@ -27,6 +29,7 @@ export async function execute(client) {
   console.log("\nLoading users..");
 
   loadJSON();
+  loadReminders();
 
   console.log("Loaded!");
 }

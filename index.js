@@ -3,7 +3,7 @@ dotenv.config();
 
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -40,13 +40,20 @@ import { saveJSON } from "./data/jsonHelper.js";
   await load_events(client);
 })();
 
+import {
+  scheduleReminders,
+  startReminderScheduler,
+} from "./loaders/reminders-loader.js";
+import { saveReminders } from "./data/reminderHelper.js";
+(async () => {
+  await startReminderScheduler(client);
+})();
+
 client.login(process.env.DISCORD_TOKEN);
 
 // SIGINT i believe is called on exit/process exit
 process.on("SIGINT", () => {
   saveJSON();
+  saveReminders();
   process.exit();
 });
-
-// import initExpress from "./server/server.js";
-// initExpress();
